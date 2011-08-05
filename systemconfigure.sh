@@ -4,7 +4,7 @@
 #System: Ubuntu 10.04
 #Author: yangkit
 #Email:  yangzhengquan@gmail.com
-#Desc: a script to configure system,including config of mysql & redis & nginx and som cron tasks.
+#Desc:   a script to configure system,including config of mysql & redis & nginx and som cron tasks.
 ###END INFO
 ##root 
 set -e
