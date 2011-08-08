@@ -11,6 +11,7 @@ redis version: 2.2.12
    FrameWork: Ruby On Rails
    DB: Mysql + redis
  Notes:
+   puts the startup scripts to the $INSTALL_PATH firstly
    if you wants to change the version of packages,you should change the 
   URL of the package defined in this script.
  Others:
