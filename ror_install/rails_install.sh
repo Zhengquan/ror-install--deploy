@@ -13,8 +13,8 @@ GEM_URL="http://production.cf.rubygems.org/rubygems/rubygems-1.8.6.tgz"
 RUBYENTER_URL="http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise-1.8.7-2011.03.tar.gz"
 REDIS_URL="http://redis.googlecode.com/files/redis-2.2.12.tar.gz"
 
-###configure redis¡¢Nginx startup scriptsµÈ
-CONFIGFILE_PATH=/home/vigoss/test
+###configure redis¡¢Nginx startup scripts
+CONFIGFILE_PATH=~
 set -e
 function error_prompt ()
 {
