@@ -44,35 +44,8 @@ if [ `id -u` -ne 0 ];	then
 fi
 ##update system
 $INSTALL update && $INSTALL upgrade  
-##update gem packages to newest
-if [ "$1" = "ALL" ] ; then
-	rubygems_install &&
-	rails_install 	&&
-	nginx_passenger_install &&
-	mysql_redis_install	&&
-	info_prompt "ALL Complete!" &&
-	exit 0
-fi
-##webserver=nginx+passenger+assets
-if [ "$1" = "WebServer" ]; then
-	rubygems_install &&
-	nginx_passenger_install &&
-	info_prompt "nginx & passenger & assets Complete!" &&
-	exit 0
-fi
 
-if [ "$1" = "DBServer" ]; then
-	mysql_redis_install	&&
-	info_prompt "Mysql & Redis Complete!" &&
-	exit 0
-fi
-
-if [ "$1" = "Capistrano" ]; then
-	rubygems_install &&
-	cap_install &&
-	info_prompt "Capistrano Complete!" &&
-	exit 0
-fi
+##declare functions
 ##install ruby & gems
 function rubygems_install()
 {
@@ -188,6 +161,36 @@ function cap_install()
 	gem install capistrano
 	return 0;
 }
+
+##update gem packages to newest
+if [ "$1" = "ALL" ] ; then
+	rubygems_install &&
+	rails_install 	&&
+	nginx_passenger_install &&
+	mysql_redis_install	&&
+	info_prompt "ALL Complete!" &&
+	exit 0
+fi
+##webserver=nginx+passenger+assets
+if [ "$1" = "WebServer" ]; then
+	rubygems_install &&
+	nginx_passenger_install &&
+	info_prompt "nginx & passenger & assets Complete!" &&
+	exit 0
+fi
+
+if [ "$1" = "DBServer" ]; then
+	mysql_redis_install	&&
+	info_prompt "Mysql & Redis Complete!" &&
+	exit 0
+fi
+
+if [ "$1" = "Capistrano" ]; then
+	rubygems_install &&
+	cap_install &&
+	info_prompt "Capistrano Complete!" &&
+	exit 0
+fi
 exit 0
 
 
