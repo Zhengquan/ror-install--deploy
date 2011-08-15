@@ -89,14 +89,14 @@ function rails_install()
 {
 	##install rails
 	info_prompt "[+]Installing rails..."
-	gem install rails -no-rdoc --no-ri
+	gem install rails --no-rdoc --no-ri
 	return 0
 }
 function nginx_passenger_install()
 {
 	##install passenger
 	info_prompt "[+]installing passenger..."
-	gem install passenger -no-rdoc --no-ri
+	gem install passenger --no-rdoc --no-ri
 	passenger-install-nginx-module
 	##add nginx startup script
 	info_prompt "[+]Adding startup scripts to /etc/inin.d/*...."
@@ -158,7 +158,7 @@ function mysql_redis_install()
 ##install Capistrano
 function cap_install()
 {
-	gem install capistrano -no-rdoc --no-ri 
+	gem install capistrano --no-rdoc --no-ri
 	return 0;
 }
 
