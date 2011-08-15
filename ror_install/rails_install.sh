@@ -181,6 +181,8 @@ if [ "$1" = "WebServer" ]; then
 fi
 
 if [ "$1" = "DBServer" ]; then
+	rubygems_install  &&
+	rails_install	&&
 	mysql_redis_install	&&
 	info_prompt "Mysql & Redis Complete!" &&
 	exit 0
