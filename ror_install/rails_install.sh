@@ -42,7 +42,8 @@ info_prompt "Ensure that the urls of software have been updated to the newest!"
 if [ `id -u` -ne 0 ];	then
 	error_prompt "Execute this script with root!"
 fi
-
+##update system
+$INSTALL update && $INSTALL upgrade  
 ##update gem packages to newest
 if [ "$1" = "ALL" ] ; then
 	rubygems_install &&
@@ -72,8 +73,6 @@ if [ "$1" = "Capistrano" ]; then
 	info_prompt "Capistrano Complete!" &&
 	exit 0
 fi
-##update system
-$INSTALL update && $INSTALL upgrade  
 ##install ruby & gems
 function rubygems_install()
 {
