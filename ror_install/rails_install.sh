@@ -174,6 +174,7 @@ fi
 ##webserver=nginx+passenger+assets
 if [ "$1" = "WebServer" ]; then
 	rubygems_install &&
+	rails_install	&&
 	nginx_passenger_install &&
 	info_prompt "nginx & passenger & assets Complete!" &&
 	exit 0
