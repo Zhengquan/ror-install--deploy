@@ -13,6 +13,8 @@ export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 export GEM_URL="http://production.cf.rubygems.org/rubygems/rubygems-1.8.6.tgz"
 export RUBYENTER_URL="http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise-1.8.7-2011.03.tar.gz"
 export REDIS_URL="http://redis.googlecode.com/files/redis-2.2.12.tar.gz"
+##default user for deploy,change "deploy" to some other name for security reasons.
+export DEPLOY_USER_NAME="deploy"
 
 ###configure redis¡¢Nginx startup scripts
 export CONFIGFILE_PATH=~
@@ -32,10 +34,16 @@ if [ $# -eq 0 ]  ; then
 \e[0;32mALL :\e[0m  environment with mysql server & redis & Nginx & Passenger
 \e[0;32mWebServer:\e[0mwith Nginx & Passenger & Assets
 \e[0;32mDBServer:\e[0m with only  redis & mysql server
-\e[0;32mCapistrano:\e[0mthe Capistrano client to deploy ror app\e[0m"
+\e[0;32mCapistrano:\e[0mthe Capistrano client to deploy ror app!"
 fi
 
-info_prompt "Ensure that the urls of software have been updated to the newest!"
+info_prompt " Ensure that the urls of software have been updated to the newest!\n
+             &the default \e[0;32muser name\e[0mfor deploy has been changed!\n"
+read choice -p "Continue?[Yy/Nn]"
+if [ "$choice" = "N" -o "$choice" = "n" ] ;then
+	exit 1
+fi
+
 ##check if the directory existed
 [ -d $INSTALL_PATH ] || error_prompt "$ is not exist!"
 
@@ -170,6 +178,17 @@ function rake_reinstall()
 	fi
 	##install rake 0.8.7
 	gem install rake -v '0.8.7'
+	return 0
+}
+#add $DEPLOY_USER_NAME user for deploying app using Capistrano
+function add_user()
+{
+	echo "[+]add user deploy for Capistrano...."
+	##remove the default user named 'deploy'
+	userdel -r deploy
+	useradd -g admin -m -s /bin/bash $DEPLOY_USER_NAME
+	passwd $DEPLOY_USER_NAME
+	return 0
 }
 ##update gem packages to newest
 if [ "$1" = "ALL" ] ; then
@@ -178,6 +197,7 @@ if [ "$1" = "ALL" ] ; then
 	nginx_passenger_install &&
 	mysql_redis_install	&&
 	rake_reinstall &&
+	add_user &&
 	info_prompt "ALL Complete!" &&
 	exit 0
 fi
@@ -187,6 +207,7 @@ if [ "$1" = "WebServer" ]; then
 	rails_install	&&
 	nginx_passenger_install &&
 	rake_reinstall &&
+	add_user &&
 	info_prompt "nginx & passenger & assets Complete!" &&
 	exit 0
 fi
@@ -196,6 +217,7 @@ if [ "$1" = "DBServer" ]; then
 	rails_install	&&
 	rake_reinstall &&
 	mysql_redis_install	&&
+	add_user &&
 	info_prompt "Mysql & Redis Complete!" &&
 	exit 0
 fi
@@ -203,6 +225,7 @@ fi
 if [ "$1" = "Capistrano" ]; then
 	rubygems_install &&
 	cap_install &&
+	add_user &&
 	info_prompt "Capistrano Complete!" &&
 	exit 0
 fi
