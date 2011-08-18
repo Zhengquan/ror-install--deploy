@@ -27,11 +27,11 @@ function info_prompt()
 }
 if [ $# -eq 0 ]  ; then
 	error_prompt "\n
-	              \e[0;31m./rails_install.sh  [ALL|WebServer|DBServer|Capistrano]:\e[0m
-		      \e[0;32mALL :\e[0m  environment with mysql server & redis & Nginx & Passenger
-		      \e[0;32mWebServer:\e[0mwith Nginx & Passenger & Assets
-		      \e[0;32mDBServer:\e[0m with only  redis & mysql server
-		      \e[0;32mCapistrano:\e[0mthe Capistrano client to deploy ror app\e[0m"
+\e[0;31m./rails_install.sh  [ALL|WebServer|DBServer|Capistrano]:\e[0m
+\e[0;32mALL :\e[0m  environment with mysql server & redis & Nginx & Passenger
+\e[0;32mWebServer:\e[0mwith Nginx & Passenger & Assets
+\e[0;32mDBServer:\e[0m with only  redis & mysql server
+\e[0;32mCapistrano:\e[0mthe Capistrano client to deploy ror app\e[0m"
 fi
 
 info_prompt "Ensure that the urls of software have been updated to the newest!"
@@ -42,9 +42,8 @@ info_prompt "Ensure that the urls of software have been updated to the newest!"
 if [ `id -u` -ne 0 ];	then
 	error_prompt "Execute this script with root!"
 fi
-##update system
-$INSTALL update && $INSTALL upgrade  
-
+##update system software index
+$INSTALL update
 ##declare functions
 ##install ruby & gems
 function rubygems_install()
@@ -97,7 +96,7 @@ function nginx_passenger_install()
 	##install passenger
 	info_prompt "[+]installing passenger..."
 	gem install passenger --no-rdoc --no-ri
-	passenger-install-nginx-module
+	passenger-install-nginx-module --auto --auto-download
 	##add nginx startup script
 	info_prompt "[+]Adding startup scripts to /etc/inin.d/*...."
 	cd $INSTALL_PATH
@@ -161,13 +160,23 @@ function cap_install()
 	gem install capistrano --no-rdoc --no-ri
 	return 0;
 }
-
+##uninstall rake 0.9.2 & install rake 0.8.7
+function rake_reinstall()
+{
+	version=`rake -V | grep '0.9.2'`
+	if [ -n "$version" ] ;then
+		gem uninstall rake -v '0.9.2'
+	fi
+	##install rake 0.8.7
+	gem install rake -v '0.8.7'
+}
 ##update gem packages to newest
 if [ "$1" = "ALL" ] ; then
 	rubygems_install &&
 	rails_install 	&&
 	nginx_passenger_install &&
 	mysql_redis_install	&&
+	rake_reinstall &&
 	info_prompt "ALL Complete!" &&
 	exit 0
 fi
@@ -176,6 +185,7 @@ if [ "$1" = "WebServer" ]; then
 	rubygems_install &&
 	rails_install	&&
 	nginx_passenger_install &&
+	rake_reinstall &&
 	info_prompt "nginx & passenger & assets Complete!" &&
 	exit 0
 fi
@@ -183,6 +193,7 @@ fi
 if [ "$1" = "DBServer" ]; then
 	rubygems_install  &&
 	rails_install	&&
+	rake_reinstall &&
 	mysql_redis_install	&&
 	info_prompt "Mysql & Redis Complete!" &&
 	exit 0
