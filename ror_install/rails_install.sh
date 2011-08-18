@@ -39,7 +39,7 @@ fi
 
 info_prompt " Ensure that the urls of software have been updated to the newest!\n
              &the default \e[0;32muser name\e[0mfor deploy has been changed!\n"
-read choice -p "Continue?[Yy/Nn]"
+read -p "Continue?[Yy/Nn]" choice
 if [ "$choice" = "N" -o "$choice" = "n" ] ;then
 	exit 1
 fi
