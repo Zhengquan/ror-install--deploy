@@ -4,6 +4,7 @@
 # Framwork : Ruby On Rails
 # DB: mysql
 # Desc  :  a scipt to install ror env automatically
+# Author: yangzhengquan@gmail.com
 ###END INFO
 export INSTALL_PATH=/opt
 export INSTALL="apt-get -y"
