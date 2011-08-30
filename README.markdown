@@ -14,9 +14,7 @@ System requirement:
  FrameWork: Ruby On Rails  
  DB: Mysql + redis  
  Notes:  
- puts the startup scripts to the $INSTALL_PATH firstly  
-if you wants to change the version of packages,you should  
-change the URL of the package defined in this script.  
+ puts the startup scripts to the $INSTALL_PATH firstly if you wants to change the version of packages,you should change the URL of the package defined in this script.  
   
 Others:  
 ------
@@ -29,9 +27,7 @@ Bug fix:
 
 Host:Ubuntu 10.04 LTS  
 System: **-laptop 2.6.32-28-generic #55-Ubuntu  
-Problem:  Cant't start the mysqld service ,when  
-try to this,"Fake initctl called, doing nothing"  
-is displayed.    
+Problem:  Cant't start the mysqld service ,when try to this,"Fake initctl called, doing nothing" is displayed.    
 Solve:  
     `sudo mv /sbin/initctl /sbin/initctl.FAKE`  
     `sudo mv ln -s /sbin/initctl.REAL /sbin/initctl`  
