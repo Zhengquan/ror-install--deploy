@@ -1,20 +1,21 @@
 A script to auto deploy rails app  
 =================================
 
- ruby version: 1.8  
- rails version: 3.0  
- rubygem version: 1.8.6  
- passenger version: *  
- redis version: 2.2.12  
+ ruby version: 		1.8  
+ rails version: 	3.0   
+ rubygem version: 	1.8.6  
+ passenger version:	3.08  
+ redis version: 	2.2.12  
+ rake version:		0.8.7  
 
 System requirement:  
 ------------------
 
- OS:Ubuntu 10.04  
- FrameWork: Ruby On Rails  
- DB: Mysql + redis  
+ OS:			Ubuntu 10.04  
+ FrameWork: 		Ruby On Rails  
+ DB: 			Mysql + redis  
  Notes:  
- puts the startup scripts to the $INSTALL_PATH firstly if you wants to change the version of packages,you should change the URL of the package defined in this script.  
+   puts the startup scripts to the $INSTALL_PATH firstly if you wants to change the version of packages,you should change the URL of the package defined in this script.  
   
 Others:  
 ------
@@ -26,7 +27,7 @@ Bug fix:
 -------
 
 Host:Ubuntu 10.04 LTS  
-System: **-laptop 2.6.32-28-generic #55-Ubuntu  
+System:  2.6.32-28-generic #55-Ubuntu  
 Problem:  Cant't start the mysqld service ,when try to this,"Fake initctl called, doing nothing" is displayed.    
 Solve:  
     `sudo mv /sbin/initctl /sbin/initctl.FAKE`  
