@@ -39,8 +39,11 @@ then:
 Problem description:  
 Could not find a JavaScript runtime. See https://github.com/sstephenson/execjs for a list of available runtimes.  
 Solve:  
-Add the following into the Gemfile.  
+Add the following into the Gemfile. 
+
 	gem 'execjs'
 	gem 'therubyracer'
+
 Then:  
+
 	sudo bundle
