@@ -47,3 +47,10 @@ Add the following into the Gemfile.
 Then:  
 
 	sudo bundle
+
+### 3
+Problem description  
+uninitialized constant Gem::SilentUI (NameError)  
+Solve:  
+Execute the following command.  
+    sudo gem update bundler
