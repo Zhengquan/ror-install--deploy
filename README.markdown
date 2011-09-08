@@ -53,4 +53,5 @@ Problem description
 uninitialized constant Gem::SilentUI (NameError)  
 Solve:  
 Execute the following command.  
+
     sudo gem update bundler
