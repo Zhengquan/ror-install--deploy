@@ -24,8 +24,8 @@ if [ version = "8.04" ]; then
   codename="hardy"
 fi
 echo "安装xtrabackup的APT源公钥..."
-gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
-gpg -a --export CD2EFD2A | apt-key add -
+sudo gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
+sudo gpg -a --export CD2EFD2A | apt-key add -
 
 echo "添加源地址至sources.list中..."
 cat >>/etc/apt/sources.list<<END_OF
