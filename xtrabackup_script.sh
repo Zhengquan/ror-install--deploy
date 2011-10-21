@@ -12,8 +12,12 @@ export XTRABACKUP_BIN=`which xtrabackup_55`
 export MYSQL_DATA_DIR="/var/lib/mysql"
 #the configuration file of mysql
 export MYSQL_CONF_FILE="/etc/mysql/my.cnf"
-#the target dir
+
+#the full backup target dir
 export BACKUP_TARGET_DIR="/data/backup"
+#the incremental backup target directory
+export INCREMENTAL_TARGET_DIR="/data/delta"
+
 #the log file
 export LOG_LOCATION="/var/log/backup_v1.log"
 #the database to be backuped
@@ -28,7 +32,7 @@ export XTRABACKUP_INSTALL_SCRIPT="https://raw.github.com/Zhengquan/ror-install--
 export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
 #Ftp settings
-export FTP_SITE_URL="url"
+export FTP_SITE_URL="192.168.56.101"
 export FTP_USER="backup"
 export FTP_PASSWORD="password"
 export FTP_TARGET_DIR="path"
@@ -43,9 +47,18 @@ function test_env()
         error_prompt "You Should install xtrabackup first!\nINSTALL:$XTRABACKUP_INSTALL_SCRIPT"
     fi
 
-    if [ ! -d "$BACKUP_TARGET_DIR" -o ! -d "$MYSQL_DATA_DIR" ] ;then
-        error_prompt "The target folder is not existed!"
-    fi
+	if [ ! -d "$BACKUP_TARGET_DIR" ] ;then
+		mkdir $BACKUP_TARGET_DIR
+	fi
+	
+	if [ ! -d "$INCREMENTAL_TARGET_DIR" ] ;then
+		mkdir $INCREMENTAL_TARGET_DIR
+	fi
+
+	if [ ! -d "$MYSQL_DATA_DIR" ] ;then
+		error_prompt "the mysql data directory is not existed!"
+	fi
+
 }
 function error_prompt()
 {
@@ -86,7 +99,7 @@ function full_backup()
 
 	#backup data file
 	trap "" SIGINT
-	log "-------Full-backing up the database $BACKUP_DATABASE---------"
+	log "---Full-backing up the database $BACKUP_DATABASE---------"
 	$XTRABACKUP_BIN --defaults-file=$MYSQL_CONF_FILE --backup --target-dir=$BACKUP_TARGET_DIR
 	#backup database structure
 	cp -r ${MYSQL_DATA_DIR}/${BACKUP_DATABASE} $BACKUP_TARGET_DIR
@@ -96,17 +109,17 @@ function full_backup()
 	cd ..
 
     #get file name
-	local package_name="$(date +%Y-%m-%d@%H_%M_%S).tar.gz"
-	log "-------Package files into $(pwd)/${package_name}-------"
+	local package_name="full_$(date +%Y-%m-%d@%H_%M_%S).tar.gz"
+	log "Package files into $(pwd)/${package_name}"
 	
     #compress and package the files
     $COMPRESS_TOOL zcf $package_name $BACKUP_TARGET_DIR
 	sync;
 
     #transfer the files into ftp site
-	log "--------Transfer to ftp site:$FTP_SITE_URL------------"
+	log "Transfer to ftp site:$FTP_SITE_URL"
 	transfer_to_ftp $package_name
-	log "------------------------Backup is completed!------------------------------"
+	log "---------Full-Backup is completed!------------"
 	
     #delete the tar.gz file
 	rm *.tar.gz
@@ -116,9 +129,47 @@ function full_backup()
 
 function incremental_backup()
 {
-	trap "" SIGINT
 	log "-------Incremental-backing up the database $BACKUP_DATABASE---------"
-	log "------------------------Backup is completed!------------------------------"
+	#if the base folder is empty,execute the full backup firstly
+	local item=`ls $BACKUP_TARGET_DIR | wc -l`
+	if [ $item -eq 0 ] ; then
+		full_backup
+	fi
+	#if the delta folder is not empty ,clear the folder firstly
+	item=`ls $INCREMENTAL_TARGET_DIR | wc -l`
+	if [ $item -ne 0 ] ;then
+		rm -rf $INCREMENTAL_TARGET_DIR/*
+	fi
+
+	trap "" SIGINT
+	#execute the incremental_backup
+	$XTRABACKUP_BIN --defaults-file=$MYSQL_CONF_FILE --backup --target-dir=$INCREMENTAL_TARGET_DIR --incremental-basedir=$BACKUP_TARGET_DIR
+
+	cd $BACKUP_TARGET_DIR
+	cd ..
+
+    #get file name
+	local package_name="incremental_$(date +%Y-%m-%d@%H_%M_%S).tar.gz"
+	log "Package files into $(pwd)/${package_name}"
+    #compress and package the files
+    $COMPRESS_TOOL zcf $package_name $INCREMENTAL_TARGET_DIR
+	sync;
+
+    #transfer the files into ftp site
+	log "Transfer to ftp site:$FTP_SITE_URL"
+	#change the remote location
+	local remote_temp=$FTP_TARGET_DIR
+	FTP_TARGET_DIR="$FTP_TARGET_DIR/incremental"
+	transfer_to_ftp $package_name
+	FTP_TARGET_DIR=$remote_temp
+
+	log "Move  files to the base folder of incremental-backup"
+	rm *.tar.gz
+	#move the delta files into base folder
+	rm -rf $BACKUP_TARGET_DIR/*
+	cp -R $INCREMENTAL_TARGET_DIR/* $BACKUP_TARGET_DIR/
+	
+	log "-------Incremental-Backup is completed!------------"
 	trap SIGINT
 }
 #check permisson
