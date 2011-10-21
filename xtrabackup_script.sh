@@ -18,8 +18,6 @@ export BACKUP_TARGET_DIR="$HOME/backup"
 #the incremental backup target directory
 export INCREMENTAL_TARGET_DIR="$HOME/delta"
 
-#the log file
-export LOG_LOCATION="$HOME/backup_v1.log"
 #the database to be backuped
 export BACKUP_DATABASE="batmanreturns_development"
 #the compress tool
@@ -39,6 +37,8 @@ export FTP_TARGET_DIR="path"
 
 #app information
 VERSION=1.1
+#the log file
+export LOG_LOCATION="$HOME/backup_v$VERSION.log"
 
 set -e
 function test_env()
@@ -82,12 +82,12 @@ function transfer_to_ftp()
 {
 	ftp -n $FTP_SITE_URL >>$LOG_LOCATION 2>/dev/null <<END_OF
 user	$FTP_USER	$FTP_PASSWORD
-cd		$FTP_TARGET_DIR
+cd	$FTP_TARGET_DIR
 binary
-put		$1
+put	$1
 bye
 END_OF
-return $?
+return  $?
 }
 function full_backup()
 {
