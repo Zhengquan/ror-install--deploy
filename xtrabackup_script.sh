@@ -14,12 +14,12 @@ export MYSQL_DATA_DIR="/var/lib/mysql"
 export MYSQL_CONF_FILE="/etc/mysql/my.cnf"
 
 #the full backup target dir
-export BACKUP_TARGET_DIR="/data/backup"
+export BACKUP_TARGET_DIR="$HOME/backup"
 #the incremental backup target directory
-export INCREMENTAL_TARGET_DIR="/data/delta"
+export INCREMENTAL_TARGET_DIR="$HOME/delta"
 
 #the log file
-export LOG_LOCATION="/var/log/backup_v1.log"
+export LOG_LOCATION="$HOME/backup_v1.log"
 #the database to be backuped
 export BACKUP_DATABASE="batmanreturns_development"
 #the compress tool
@@ -38,7 +38,7 @@ export FTP_PASSWORD="password"
 export FTP_TARGET_DIR="path"
 
 #app information
-VERSION=1.0
+VERSION=1.1
 
 set -e
 function test_env()
@@ -91,7 +91,7 @@ return $?
 }
 function full_backup()
 {
-    #clean the target folder firstly
+    	#clean the target folder firstly
 	local item=`ls $BACKUP_TARGET_DIR | wc -l`
 	if [ $item -ne 0 -a -n ${BACKUP_TARGET_DIR} ] ; then
 	    rm -rf ${BACKUP_TARGET_DIR}/*
@@ -108,20 +108,20 @@ function full_backup()
 	cd $BACKUP_TARGET_DIR
 	cd ..
 
-    #get file name
+    	#get file name
 	local package_name="full_$(date +%Y-%m-%d@%H_%M_%S).tar.gz"
 	log "Package files into $(pwd)/${package_name}"
 	
-    #compress and package the files
-    $COMPRESS_TOOL zcf $package_name $BACKUP_TARGET_DIR
+    	#compress and package the files
+    	$COMPRESS_TOOL zcf $package_name $BACKUP_TARGET_DIR
 	sync;
 
-    #transfer the files into ftp site
+    	#transfer the files into ftp site
 	log "Transfer to ftp site:$FTP_SITE_URL"
 	transfer_to_ftp $package_name
 	log "---------Full-Backup is completed!------------"
 	
-    #delete the tar.gz file
+    	#delete the tar.gz file
 	rm *.tar.gz
 	trap SIGINT
 	return $?
@@ -148,14 +148,14 @@ function incremental_backup()
 	cd $BACKUP_TARGET_DIR
 	cd ..
 
-    #get file name
+    	#get file name
 	local package_name="incremental_$(date +%Y-%m-%d@%H_%M_%S).tar.gz"
 	log "Package files into $(pwd)/${package_name}"
-    #compress and package the files
-    $COMPRESS_TOOL zcf $package_name $INCREMENTAL_TARGET_DIR
+    	#compress and package the files
+    	$COMPRESS_TOOL zcf $package_name $INCREMENTAL_TARGET_DIR
 	sync;
 
-    #transfer the files into ftp site
+    	#transfer the files into ftp site
 	log "Transfer to ftp site:$FTP_SITE_URL"
 	#change the remote location
 	local remote_temp=$FTP_TARGET_DIR
@@ -173,7 +173,7 @@ function incremental_backup()
 	trap SIGINT
 }
 #check permisson
-check_permission
+#check_permission
 #test environment
 test_env
 
