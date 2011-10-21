@@ -182,7 +182,7 @@ case $1 in
 	   full)
 		full_backup
 		;;
-incremental)
+    incremental)
 	    incremental_backup
 		;;
 	      *)
