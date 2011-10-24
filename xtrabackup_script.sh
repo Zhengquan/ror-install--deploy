@@ -9,15 +9,14 @@
 #the executable xtrabackup tool
 export XTRABACKUP_BIN=`which xtrabackup_55`
 #the data location of mysql
-export MYSQL_DATA_DIR="/var/lib/mysql"
+export MYSQL_DATA_DIR="/usr/local/mysql/data"
 #the configuration file of mysql
-export MYSQL_CONF_FILE="/etc/mysql/my.cnf"
+export MYSQL_CONF_FILE="/etc/my.cnf"
 
 #the full backup target dir
 export BACKUP_TARGET_DIR="$HOME/backup"
 #the incremental backup target directory
 export INCREMENTAL_TARGET_DIR="$HOME/delta"
-
 #the database to be backuped
 export BACKUP_DATABASE="batmanreturns_development"
 #the compress tool
@@ -36,7 +35,7 @@ export FTP_PASSWORD="password"
 export FTP_TARGET_DIR="path"
 
 #app information
-VERSION=1.1
+VERSION=1.2
 #the log file
 export LOG_LOCATION="$HOME/backup_v$VERSION.log"
 
@@ -82,12 +81,12 @@ function transfer_to_ftp()
 {
 	ftp -n $FTP_SITE_URL >>$LOG_LOCATION 2>/dev/null <<END_OF
 user	$FTP_USER	$FTP_PASSWORD
-cd	$FTP_TARGET_DIR
+cd		$FTP_TARGET_DIR
 binary
-put	$1
+put		$1
 bye
 END_OF
-return  $?
+return $?
 }
 function full_backup()
 {
@@ -100,7 +99,7 @@ function full_backup()
 	#backup data file
 	trap "" SIGINT
 	log "---Full-backing up the database $BACKUP_DATABASE---------"
-	$XTRABACKUP_BIN --defaults-file=$MYSQL_CONF_FILE --backup --target-dir=$BACKUP_TARGET_DIR
+	$XTRABACKUP_BIN --defaults-file=$MYSQL_CONF_FILE --backup --target-dir=$BACKUP_TARGET_DIR --datadir=$MYSQL_DATA_DIR
 	#backup database structure
 	cp -r ${MYSQL_DATA_DIR}/${BACKUP_DATABASE} $BACKUP_TARGET_DIR
 
@@ -143,7 +142,7 @@ function incremental_backup()
 
 	trap "" SIGINT
 	#execute the incremental_backup
-	$XTRABACKUP_BIN --defaults-file=$MYSQL_CONF_FILE --backup --target-dir=$INCREMENTAL_TARGET_DIR --incremental-basedir=$BACKUP_TARGET_DIR
+	$XTRABACKUP_BIN --defaults-file=$MYSQL_CONF_FILE --backup --target-dir=$INCREMENTAL_TARGET_DIR --incremental-basedir=$BACKUP_TARGET_DIR --datadir=$MYSQL_DATA_DIR
 
 	cd $BACKUP_TARGET_DIR
 	cd ..
@@ -182,7 +181,7 @@ case $1 in
 	   full)
 		full_backup
 		;;
-    incremental)
+incremental)
 	    incremental_backup
 		;;
 	      *)
