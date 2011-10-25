@@ -81,9 +81,9 @@ function transfer_to_ftp()
 {
 	ftp -n $FTP_SITE_URL >>$LOG_LOCATION 2>/dev/null <<END_OF
 user	$FTP_USER	$FTP_PASSWORD
-cd		$FTP_TARGET_DIR
+cd	$FTP_TARGET_DIR
 binary
-put		$1
+put	$1
 bye
 END_OF
 return $?
